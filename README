@@ -1,0 +1,1 @@
+Open up build.properties and set the value of the 'voltdb.dir' property to the location where you installed VoltDB.

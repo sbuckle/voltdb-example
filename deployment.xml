@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<deployment>
+    <cluster hostcount="1" sitesperhost="2" />
+    <paths>
+        <voltdbroot path="/tmp" />
+        <snapshots path="/tmp/autobackup" />
+    </paths>
+    <httpd enabled="true">
+        <jsonapi enabled="true" />
+    </httpd>
+    <snapshot prefix="acmesave"
+              frequency="2m"
+              retain="3" />
+</deployment>

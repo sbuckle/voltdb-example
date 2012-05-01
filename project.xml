@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project>
+    <database name='database'>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>    
+        <procedures>
+            <procedure class='acme.procedures.AddEmployee' />
+            <procedure class='acme.procedures.CreateDepartment' />
+            <procedure class='acme.procedures.EmployeeDetails' />
+        </procedures>
+        <partitions>
+            <!-- We don't include "department" as it is a replicated table -->
+            <partition table='EMPLOYEE' column='EMAIL' />
+        </partitions>
+    </database>
+</project>
