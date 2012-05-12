@@ -1,13 +1,23 @@
 package acme;
 
-// VoltTable is VoltDB's table representation.
 import org.voltdb.VoltTable;
 import org.voltdb.VoltTableRow;
 import org.voltdb.client.ClientConfig;
 import org.voltdb.client.ClientResponse;
 
+/**
+ * Example client code to execute some stored
+ * procedures against a VoltDB instance.
+ *
+ */
 public class Client {
     
+	public static long getId(org.voltdb.client.Client client, String tableName) 
+		throws Exception {
+		VoltTable[] ident = client.callProcedure("GenerateUniqueIdentifier", "DEPARTMENT").getResults();
+		return ident[0].fetchRow(0).getLong(0);
+	}
+	
     public static void main(String[] args) throws Exception {
         System.out.println("Client started");
         
@@ -20,7 +30,6 @@ public class Client {
         // database always runs on TCP/IP port 21212.
         client.createConnection("localhost");
         
-        
         // Example of executing a dynamic SQL query
         String tableName = "EMPLOYEE";
         VoltTable[] count = client.callProcedure("@AdHoc", "SELECT COUNT(*) FROM " + tableName).getResults();
@@ -30,9 +39,12 @@ public class Client {
          * Initialize the database.
          */
         try {
-        	client.callProcedure("CreateDepartment", 1, "Accounts");
-        	client.callProcedure("CreateDepartment", 2, "Sales");
-        	client.callProcedure("CreateDepartment", 3, "IT");
+        	client.callProcedure("AddTableIdentifier", "DEPARTMENT");
+        	
+        	String[] departments = { "Accounts", "Sales", "IT"};
+        	for (String department : departments) {
+        		client.callProcedure("CreateDepartment", getId(client, "DEPARTMENT"), department);
+        	}
         	
         	client.callProcedure("AddEmployee", "wile@acme.com", "Wile", "Coyote", 1);
         	client.callProcedure("AddEmployee", "john@acme.com", "John", "Ledger", 1);
@@ -57,6 +69,9 @@ public class Client {
         VoltTableRow row = result.fetchRow(0);
         System.out.printf("%s works in %s\n", row.getString("FIRSTNAME"),
         		row.getString("NAME"));
+        
+        // Should output unique value each time the client is invoked
+        System.out.println(getId(client, "DEPARTMENT"));
     }
 
 }
